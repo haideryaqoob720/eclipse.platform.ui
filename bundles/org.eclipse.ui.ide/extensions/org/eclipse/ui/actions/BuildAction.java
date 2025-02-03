@@ -292,6 +292,18 @@ public class BuildAction extends WorkspaceAction {
 				}
 				return status == null ? Status.OK_STATUS : status;
 			}
+			@Override
+			protected IStatus runInWorkspace(IProgressMonitor monitor) {
+				// Add build context to status
+				IStatus status = Status.create(getOperationStatus());
+				status = new Status(
+					status.getSeverity(),
+					"org.eclipse.ui.build", // Plugin ID for build context
+					status.getMessage()
+				);
+				
+				return status;
+			}
 		};
 		job.setProperty(IProgressConstants2.SHOW_IN_TASKBAR_ICON_PROPERTY, Boolean.TRUE);
 		job.setUser(true);

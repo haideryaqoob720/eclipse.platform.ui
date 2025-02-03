@@ -70,10 +70,24 @@ public class WorkbenchDialogBlockedHandler implements IDialogBlockedHandler {
 
 	}
 
+	private boolean isBuildDependentAction(String actionId) {
+        // Only block actions that depend on build results
+        return actionId != null && (
+            actionId.contains("run") ||
+            actionId.contains("debug") ||
+            actionId.contains("launch")
+        );
+    }
+
 	@Override
 	public void showBlocked(Shell parentShell,
 			IProgressMonitor blockingMonitor, IStatus blockingStatus,
 			String blockedName) {
+		// Check if action should be blocked
+        String actionId = blockingStatus.getPlugin();
+        if (!isBuildDependentAction(actionId)) {
+            return; // Don't block non-build-dependent actions
+        }
 
 		nestingDepth++;
 		if (outerMonitor == null) {
